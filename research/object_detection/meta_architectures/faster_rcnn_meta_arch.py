@@ -1334,33 +1334,6 @@ class FasterRCNNMetaArch(model.DetectionModel):
 
     rpn_features_to_crop, self.endpoints = self._extract_proposal_features(
         preprocessed_inputs)
-<<<<<<< HEAD
-
-    feature_map_shape = tf.shape(rpn_features_to_crop)
-    anchors = box_list_ops.concatenate(
-        self._first_stage_anchor_generator.generate([(feature_map_shape[1],
-                                                      feature_map_shape[2])]))
-    rpn_box_predictor_features = (
-        self._first_stage_box_predictor_first_conv(rpn_features_to_crop))
-||||||| parent of 902e1b72... Modify code to suit multiscale anchor generator
-    
-    # decide if rpn_features_to_crop is a list. If not make it a list
-    if not isinstance(rpn_features_to_crop, list):
-      rpn_features_to_crop = [rpn_features_to_crop]
-
-    rpn_box_predictor_features = []
-    anchors = []
-    for single_rpn_features_to_crop in rpn_features_to_crop:
-      feature_map_shape = tf.shape(single_rpn_features_to_crop)
-      level_anchors = box_list_ops.concatenate(
-          self._first_stage_anchor_generator.generate([(feature_map_shape[1],
-                                                        feature_map_shape[2])]))
-      anchors.append(level_anchors)
-      single_rpn_box_predictor_features = (
-        self._first_stage_box_predictor_first_conv(single_rpn_features_to_crop))
-      rpn_box_predictor_features.append(single_rpn_box_predictor_features)
-    anchors = box_list_ops.concatenate(anchors)
-=======
     
     # decide if rpn_features_to_crop is a list. If not make it a list
     if not isinstance(rpn_features_to_crop, list):
@@ -1376,7 +1349,6 @@ class FasterRCNNMetaArch(model.DetectionModel):
       rpn_box_predictor_features.append(single_rpn_box_predictor_features)
     anchors = box_list_ops.concatenate(
         self._first_stage_anchor_generator.generate(feature_map_shapes))
->>>>>>> 902e1b72... Modify code to suit multiscale anchor generator
     return (rpn_box_predictor_features, rpn_features_to_crop,
             anchors, image_shape)
 
