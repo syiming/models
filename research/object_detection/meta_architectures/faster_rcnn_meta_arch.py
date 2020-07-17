@@ -1949,9 +1949,15 @@ class FasterRCNNMetaArch(model.DetectionModel):
     Returns:
       A float32 tensor with shape [K, new_height, new_width, depth].
     """
+    num_levels = len(features_to_crop)
+    box_levels = None
+    if num_levels != 1:
+      # If there are mutiple levels to select, get the box levels
+      box_levels = ops.fpn_feature_levels(num_levels, num_levels - 1,
+                                          1.0/224, proposal_boxes_normalized)
     cropped_regions = self._flatten_first_two_dimensions(
         self._crop_and_resize_fn(
-            features_to_crop, proposal_boxes_normalized,
+            features_to_crop, proposal_boxes_normalized, box_levels,
             [self._initial_crop_size, self._initial_crop_size]))
     return self._maxpool_layer(cropped_regions)
 
