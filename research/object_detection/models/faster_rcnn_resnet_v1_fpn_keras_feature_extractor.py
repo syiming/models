@@ -31,6 +31,64 @@ _RESNET_MODEL_OUTPUT_LAYERS = {
                       'conv4_block36_out', 'conv5_block3_out'],
 }
 
+class ResnetFPN(tf.keras.layers.Layer):
+  """Construct Resnet FPN layer."""
+
+    def __init__(self,
+                 backbone_classifier,
+                 fpn_features_generator,
+                 coarse_feature_layers,
+                 fpn_min_level,
+                 resnet_block_names,
+                 base_fpn_max_level):
+      """Constructor.
+
+    Args:
+      backbone_classifier: Classifier backbone. Should be one of 'resnet_v1_50',
+        'resnet_v1_101', 'resnet_v1_152'.
+      fpn_features_generator: KerasFpnTopDownFeatureMaps that accepts a
+        dictionary of features and returns a ordered dictionary of fpn features.
+      coarse_feature_layers: Coarse feature layers for fpn.
+      fpn_min_level: the highest resolution feature map to use in FPN. The valid
+        values are {2, 3, 4, 5} which map to Resnet v1 layers.
+      resnet_block_names: a list of block names of resnet.
+      base_fpn_max_level: maximum level of fpn without coarse feature layers.
+    """
+      super(ResnetFPN, self).__init__()
+      self.classification_backbone = backbone_classifier
+      self.fpn_features_generator = fpn_features_generator
+      self.coarse_feature_layers = coarse_feature_layers
+      self._fpn_min_level = fpn_min_level
+      self._resnet_block_names = resnet_block_names
+      self._base_fpn_max_level = base_fpn_max_level
+
+    def call(self, inputs):
+      inputs = ops.pad_to_multiple(inputs, 32)
+      backbone_outputs = self.classification_backbone(inputs)
+
+      feature_block_list = []
+      for level in range(self._fpn_min_level, self._base_fpn_max_level + 1):
+        feature_block_list.append('block{}'.format(level - 1))
+      feature_block_map = dict(
+          list(zip(self._resnet_block_names, backbone_outputs)))
+      fpn_input_image_features = [
+          (feature_block, feature_block_map[feature_block])
+          for feature_block in feature_block_list]
+      fpn_features = self.fpn_features_generator(fpn_input_image_features)
+
+      feature_maps = []
+      for level in range(self._fpn_min_level, self._base_fpn_max_level + 1):
+        feature_maps.append(fpn_features['top_down_block{}'.format(level-1)])
+      last_feature_map = fpn_features['top_down_block{}'.format(
+          self._base_fpn_max_level - 1)]
+
+      for coarse_feature_layers in self.coarse_feature_layers:
+        for layer in coarse_feature_layers:
+          last_feature_map = layer(last_feature_map)
+        feature_maps.append(last_feature_map)
+
+      return feature_maps
+
 
 class FasterRCNNResnetV1FpnKerasFeatureExtractor(
     faster_rcnn_meta_arch.FasterRCNNKerasFeatureExtractor):
