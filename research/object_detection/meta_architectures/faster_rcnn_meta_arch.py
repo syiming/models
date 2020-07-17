@@ -1955,10 +1955,14 @@ class FasterRCNNMetaArch(model.DetectionModel):
       # If there are mutiple levels to select, get the box levels 
       box_levels = ops.fpn_feature_levels(num_levels, num_levels - 1,
                                           1.0/224, proposal_boxes_normalized)
+      print(box_levels)
+      print(proposal_boxes_normalized)
     cropped_regions = self._flatten_first_two_dimensions(
         self._crop_and_resize_fn(
             features_to_crop, proposal_boxes_normalized, box_levels,
             [self._initial_crop_size, self._initial_crop_size]))
+    print(cropped_regions)
+    raise RuntimeError('1111')
     return self._maxpool_layer(cropped_regions)
 
   def _postprocess_box_classifier(self,
