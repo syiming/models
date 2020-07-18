@@ -113,6 +113,8 @@ from object_detection.utils import ops
 from object_detection.utils import shape_utils
 from object_detection.utils import variables_helper
 
+import numpy as np
+
 
 _UNINITIALIZED_FEATURE_EXTRACTOR = '__uninitialized__'
 
@@ -1951,10 +1953,24 @@ class FasterRCNNMetaArch(model.DetectionModel):
     """
     num_levels = len(features_to_crop)
     box_levels = None
+
+    image_size = 640
+    proposal_boxes_normalized = np.array(
+        [
+            [
+                [0, 0, 111, 111],  # Level 0.
+                [0, 0, 113, 113],  # Level 1.
+                [0, 0, 223, 223],  # Level 1.
+                [0, 0, 225, 225],  # Level 2.
+                [0, 0, 449, 449]   # Level 3.
+            ],
+        ],
+        dtype=np.float32) / image_size
+
     if num_levels != 1:
       # If there are mutiple levels to select, get the box levels 
       box_levels = ops.fpn_feature_levels(num_levels, num_levels - 1,
-                                          1.0/224, proposal_boxes_normalized)
+                                          640.0/224, proposal_boxes_normalized)
       print(box_levels)
       print(proposal_boxes_normalized)
     cropped_regions = self._flatten_first_two_dimensions(
