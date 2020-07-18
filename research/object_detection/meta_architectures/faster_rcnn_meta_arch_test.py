@@ -33,6 +33,34 @@ class FasterRCNNMetaArchTest(
     faster_rcnn_meta_arch_test_lib.FasterRCNNMetaArchTestBase,
     parameterized.TestCase):
 
+  def test_temp(self):
+    with test_utils.GraphContextOrNone() as g:
+      model = self._build_model(
+          is_training=False,
+          number_of_stages=2, second_stage_batch_size=6)
+
+    def graph_fn():
+      image_size = 640
+      batch_size = 2
+      rpn_features_to_crop = [tf.ones((batch_size, 2, 2, 3),
+                                     tf.float32)] * 5
+      boxes = np.array(
+          [
+              [
+                  [0, 0, 111, 111],  # Level 0.
+                  [0, 0, 113, 113],  # Level 1.
+                  [0, 0, 223, 223],  # Level 1.
+                  [0, 0, 225, 225],  # Level 2.
+                  [0, 0, 449, 449]   # Level 3.
+              ],
+          ],
+          dtype=np.float32) / image_size
+      model._compute_second_stage_input_feature_maps(rpn_features_to_crop, boxes)
+    
+    out = self.execute_cpu(graph_fn, [], graph=g)
+    print(out)
+    self.assertTrue(False)
+
   def test_postprocess_second_stage_only_inference_mode_with_masks(self):
     with test_utils.GraphContextOrNone() as g:
       model = self._build_model(
