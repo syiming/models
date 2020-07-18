@@ -114,6 +114,7 @@ from object_detection.utils import shape_utils
 from object_detection.utils import variables_helper
 
 import numpy as np
+import sys
 
 
 _UNINITIALIZED_FEATURE_EXTRACTOR = '__uninitialized__'
