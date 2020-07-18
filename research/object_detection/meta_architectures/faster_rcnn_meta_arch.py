@@ -1972,7 +1972,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
       # If there are mutiple levels to select, get the box levels 
       box_levels = ops.fpn_feature_levels(num_levels, num_levels - 1,
                                           640.0/224, proposal_boxes_normalized)
-      print(box_levels)
+      tf.print(box_levels, output_stream=sys.stdout)
       
     cropped_regions = self._flatten_first_two_dimensions(
         self._crop_and_resize_fn(
