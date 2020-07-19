@@ -38,6 +38,7 @@ class ResnetFPN(tf.keras.layers.Layer):
                  backbone_classifier,
                  fpn_features_generator,
                  coarse_feature_layers,
+                 pad_to_multiple,
                  fpn_min_level,
                  resnet_block_names,
                  base_fpn_max_level):
@@ -58,12 +59,13 @@ class ResnetFPN(tf.keras.layers.Layer):
       self.classification_backbone = backbone_classifier
       self.fpn_features_generator = fpn_features_generator
       self.coarse_feature_layers = coarse_feature_layers
+      self.pad_to_multiple = pad_to_multiple
       self._fpn_min_level = fpn_min_level
       self._resnet_block_names = resnet_block_names
       self._base_fpn_max_level = base_fpn_max_level
 
     def call(self, inputs):
-      inputs = ops.pad_to_multiple(inputs, 32)
+      inputs = ops.pad_to_multiple(inputs, self.pad_to_multiple)
       backbone_outputs = self.classification_backbone(inputs)
 
       feature_block_list = []
@@ -101,6 +103,7 @@ class FasterRCNNResnetV1FpnKerasFeatureExtractor(
                first_stage_features_stride,
                conv_hyperparams,
                batch_norm_trainable=False,
+               pad_to_multiple=32,
                weight_decay=0.0,
                fpn_min_level=2,
                fpn_max_level=6,
@@ -151,6 +154,7 @@ class FasterRCNNResnetV1FpnKerasFeatureExtractor(
     self._fpn_max_level = fpn_max_level
     self._additional_layer_depth = additional_layer_depth
     self._freeze_batchnorm = (not batch_norm_trainable)
+    self._pad_to_multiple = pad_to_multiple
     self._override_base_feature_extractor_hyperparams = \
                     override_base_feature_extractor_hyperparams
     self._resnet_block_names = ['block1', 'block2', 'block3', 'block4']
@@ -257,20 +261,14 @@ class FasterRCNNResnetV1FpnKerasFeatureExtractor(
               self._conv_hyperparams.build_activation_layer(
                   name=layer_name))
           self._coarse_feature_layers.append(layers)
-
-        feature_maps = []
-        for level in range(self._fpn_min_level, self._base_fpn_max_level + 1):
-          feature_maps.append(fpn_features['top_down_block{}'.format(level-1)])
-        last_feature_map = fpn_features['top_down_block{}'.format(
-            self._base_fpn_max_level - 1)]
-
-        for coarse_feature_layers in self._coarse_feature_layers:
-          for layer in coarse_feature_layers:
-            last_feature_map = layer(last_feature_map)
-          feature_maps.append(last_feature_map)
-
-        feature_extractor_model = tf.keras.models.Model(
-            inputs=full_resnet_v1_model.inputs, outputs=feature_maps)
+        
+        feature_extractor_model = ResnetFPN(self.classification_backbone,
+                           self._fpn_features_generator,
+                           self._coarse_feature_layers,
+                           self._pad_to_multiple,
+                           self._fpn_min_level,
+                           self._resnet_block_names,
+                           self._base_fpn_max_level)
         return feature_extractor_model
 
   def get_box_classifier_feature_extractor_model(self, name=None):
