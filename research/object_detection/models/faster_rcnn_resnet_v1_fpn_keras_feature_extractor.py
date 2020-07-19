@@ -49,7 +49,7 @@ class ResnetFPN(tf.keras.layers.Layer):
       self._base_fpn_max_level = base_fpn_max_level
 
     def call(self, inputs):
-      inputs = ops.pad_to_multiple(inputs, 32)
+      inputs = ops.pad_to_multiple(inputs, 32.0)
       backbone_outputs = self.classification_backbone(inputs)
 
       feature_block_list = []
