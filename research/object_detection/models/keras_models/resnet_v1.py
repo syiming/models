@@ -186,7 +186,7 @@ class _LayersOverride(object):
     else:
       kwargs['scale'] = self._batchnorm_scale
       kwargs['epsilon'] = self._default_batchnorm_epsilon
-      return freezable_batch_norm.FreezableBatchNorm(
+      return tf.keras.layers.experimental.SyncBatchNormalization(
           training=self._batchnorm_training,
           momentum=self._default_batchnorm_momentum,
           **kwargs)

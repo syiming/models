@@ -133,7 +133,7 @@ class KerasLayerHyperparams(object):
       is False)
     """
     if self.use_batch_norm():
-      return freezable_batch_norm.FreezableBatchNorm(
+      return tf.keras.layers.experimental.SyncBatchNormalization(
           training=training,
           **self.batch_norm_params(**overrides)
       )
