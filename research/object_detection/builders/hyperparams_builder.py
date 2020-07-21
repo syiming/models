@@ -15,7 +15,7 @@
 
 """Builder function to construct tf-slim arg_scope for convolution, fc ops."""
 import tensorflow.compat.v1 as tf
-import tensorflow.compat.v2 as tf
+import tensorflow.compat.v2 as tf2
 import tf_slim as slim
 
 from object_detection.core import freezable_batch_norm
