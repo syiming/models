@@ -182,13 +182,11 @@ class _LayersOverride(object):
     name = kwargs.get('name')
     if self._conv_hyperparams:
       return self._conv_hyperparams.build_batch_norm(
-          training=self._batchnorm_training,
           name=name)
     else:
       kwargs['scale'] = self._batchnorm_scale
       kwargs['epsilon'] = self._default_batchnorm_epsilon
       return tf2.keras.layers.experimental.SyncBatchNormalization(
-          training=self._batchnorm_training,
           momentum=self._default_batchnorm_momentum,
           **kwargs)
 

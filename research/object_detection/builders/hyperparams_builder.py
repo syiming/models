@@ -135,7 +135,6 @@ class KerasLayerHyperparams(object):
     """
     if self.use_batch_norm():
       return tf2.keras.layers.experimental.SyncBatchNormalization(
-          training=training,
           **self.batch_norm_params(**overrides)
       )
     else:
