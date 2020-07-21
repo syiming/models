@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow.compat.v1 as tf
+import tensorflow.compat.v2 as tf2
 
 from object_detection.core import freezable_batch_norm
 from object_detection.models.keras_models import model_utils
@@ -186,7 +187,7 @@ class _LayersOverride(object):
     else:
       kwargs['scale'] = self._batchnorm_scale
       kwargs['epsilon'] = self._default_batchnorm_epsilon
-      return tf.keras.layers.experimental.SyncBatchNormalization(
+      return tf2.keras.layers.experimental.SyncBatchNormalization(
           training=self._batchnorm_training,
           momentum=self._default_batchnorm_momentum,
           **kwargs)
