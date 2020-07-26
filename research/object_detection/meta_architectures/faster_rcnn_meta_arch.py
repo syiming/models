@@ -688,7 +688,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
        true_image_shapes) = shape_utils.resize_images_and_return_shapes(
            inputs, self._image_resizer_fn)
 
-      self._resize_shape = resized_inputs.shape.as_list()
+      self._resize_shape = resized_inputs.shape
 
       return (self._feature_extractor.preprocess(resized_inputs),
               true_image_shapes)
