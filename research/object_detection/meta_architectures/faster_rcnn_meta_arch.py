@@ -688,7 +688,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
        true_image_shapes) = shape_utils.resize_images_and_return_shapes(
            inputs, self._image_resizer_fn)
 
-      self._resize_shape = resized_inputs.shape[1:3]
+      self._resize_shape = tf.shape(resized_inputs, dtype=tf.float32)[1:3]
 
       return (self._feature_extractor.preprocess(resized_inputs),
               true_image_shapes)
@@ -1957,8 +1957,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
     if num_levels != 1:
       # If there are mutiple levels to select, get the box levels 
       print("****************", self._resize_shape)
-      print(tf.sqrt(self._resize_shape[1] * self._resize_shape[2]))
-      print(tf.sqrt(self._resize_shape[1] * self._resize_shape[2]).dtype)
+      print(tf.sqrt(self._resize_shape))
       box_levels = ops.fpn_feature_levels(num_levels, num_levels - 2,
                                           tf.sqrt(self._resize_shape[1] * self._resize_shape[2]) / 224.0,
                                           proposal_boxes_normalized)
