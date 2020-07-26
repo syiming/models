@@ -227,7 +227,6 @@ class FasterRCNNResnetV1FpnKerasFeatureExtractor(
         self.classification_backbone = tf.keras.Model(
             inputs=full_resnet_v1_model.inputs,
             outputs=outputs)
-        backbone_outputs = self.classification_backbone(full_resnet_v1_model.inputs)
 
         # construct FPN feature generator
         self._base_fpn_max_level = min(self._fpn_max_level, 5)
