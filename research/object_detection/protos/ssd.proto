@@ -203,3 +203,4 @@ message SsdFeatureExtractor {
   optional int32 num_layers = 12 [default = 6];
 
 }
+

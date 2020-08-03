@@ -26,6 +26,7 @@ message FeaturePyramidNetworks {
 
   // channel depth for additional coarse feature layers.
   optional int32 additional_layer_depth = 3 [default = 256];
+
 }
 
 // Configuration for Bidirectional Feature Pyramid Networks.
