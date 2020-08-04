@@ -1965,7 +1965,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
       box_levels = ops.fpn_feature_levels(
           num_levels, num_levels - 2,
           tf.sqrt(
-            tf.cast(image_shape[1] * image_shape[2] * 1.0, tf.float32)) / 224.0,
+            tf.cast(image_shape[1] * image_shape[2], tf.float32)) / 224.0,
           proposal_boxes_normalized)
 
     cropped_regions = self._flatten_first_two_dimensions(
