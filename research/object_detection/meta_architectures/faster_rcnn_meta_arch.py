@@ -1935,7 +1935,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
 
   def _compute_second_stage_input_feature_maps(self, features_to_crop,
                                                proposal_boxes_normalized,
-                                               image_shape,
+                                               image_shape=None,
                                                **side_inputs):
     """Crops to a set of proposals from the feature map for a batch of images.
 
