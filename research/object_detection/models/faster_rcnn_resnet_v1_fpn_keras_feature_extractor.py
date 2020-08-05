@@ -427,7 +427,6 @@ class FasterRCNNResnet152FpnKerasFeatureExtractor(
         fpn_max_level=fpn_max_level,
         additional_layer_depth=additional_layer_depth,
         override_base_feature_extractor_hyperparams=override_base_feature_extractor_hyperparams)
-    )
 
 
 class FasterRCNNResnet101FpnKerasFeatureExtractor(
