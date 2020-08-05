@@ -587,7 +587,13 @@ class FasterRCNNMetaArchTestBase(test_case.TestCase, parameterized.TestCase):
       {'use_static_shapes': True},
   )
   def test_predict_shape_in_inference_mode_first_stage_only_multi_level(
+<<<<<<< Updated upstream
       self, use_static_shapes):
+||||||| merged common ancestors
+      self, use_static_shapes=False):
+=======
+      self, use_static_shapes=True):
+>>>>>>> Stashed changes
     batch_size = 2
     height = 50
     width = 52
