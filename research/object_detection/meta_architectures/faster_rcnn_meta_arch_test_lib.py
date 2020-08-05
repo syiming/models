@@ -35,7 +35,7 @@ from object_detection.meta_architectures import faster_rcnn_meta_arch
 from object_detection.protos import box_predictor_pb2
 from object_detection.protos import hyperparams_pb2
 from object_detection.protos import post_processing_pb2
-from object_detection.utils import ops
+from object_detection.utils import spatial_transform_ops as spatial_ops
 from object_detection.utils import test_case
 from object_detection.utils import test_utils
 from object_detection.utils import tf_version
@@ -430,8 +430,9 @@ class FasterRCNNMetaArchTestBase(test_case.TestCase, parameterized.TestCase):
           max_negatives_per_positive=None)
 
     crop_and_resize_fn = (
-        ops.multilevel_matmul_crop_and_resize
-        if use_matmul_crop_and_resize else ops.multilevel_native_crop_and_resize)
+        spatial_ops.multilevel_matmul_crop_and_resize
+        if use_matmul_crop_and_resize
+        else spatial_ops.multilevel_native_crop_and_resize)
     common_kwargs = {
         'is_training':
             is_training,
@@ -581,8 +582,12 @@ class FasterRCNNMetaArchTestBase(test_case.TestCase, parameterized.TestCase):
     self.assertTrue(np.all(np.less_equal(anchors[:, 2], height)))
     self.assertTrue(np.all(np.less_equal(anchors[:, 3], width)))
 
+  @parameterized.parameters(
+      {'use_static_shapes': False},
+      {'use_static_shapes': True},
+  )
   def test_predict_shape_in_inference_mode_first_stage_only_multi_level(
-      self, use_static_shapes=False):
+      self, use_static_shapes):
     batch_size = 2
     height = 50
     width = 52
